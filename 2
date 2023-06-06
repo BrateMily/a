@@ -1,0 +1,483 @@
+using System;
+
+using System.Collections.Generic;
+
+using System.ComponentModel;
+
+using System.Data;
+
+using System.Drawing;
+
+using System.Linq;
+
+using System.Text;
+
+using System.Threading.Tasks;
+
+using System.Windows.Forms;
+
+using System.Data.SqlClient;
+
+namespace DemoMatura
+
+{
+
+    public partial class Form2 : Form
+
+    {
+
+        public Form2()
+
+        {
+
+            InitializeComponent();
+
+        }
+
+        SqlConnection Kon = new SqlConnection("Data Source=DESKTOP-IN77TSH;Initial Catalog=DemoMatura;Integrated Security=True");
+
+        SqlCommand kom = new SqlCommand();
+
+        SqlDataReader dr;
+
+        int id = 0;
+
+        private void PuniCheckListBox()
+
+        {
+
+            int i;
+
+         
+
+            Kon.Open();
+
+            SqlCommand cmd = new SqlCommand("SELECT * FROM Kategorija WHERE Kategorija <> '-' ORDER BY Kategorija", Kon);
+
+            cmd.CommandType = CommandType.Text;
+
+            SqlDataAdapter sda = new SqlDataAdapter(cmd);
+
+            DataTable dt = new DataTable();
+
+            sda.Fill(dt);
+
+            for (i = 0; i < dt.Rows.Count; i++)
+
+            {
+
+                checkedListBox1.Items.Add(dt.Rows[i]["Kategorija"].ToString());
+
+            }
+
+            Kon.Close();
+
+        }
+
+        private void PuniGridChart()
+
+        {
+
+            Kon.Open();
+
+            //if (rbOdabraneKategorije.Checked == true)
+
+            //{
+
+                SqlCommand cmd = new SqlCommand("PuniGridChart", Kon);
+
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                switch (checkedListBox1.CheckedItems.Count)
+
+                {
+
+                    case 1:
+
+                        cmd.Parameters.AddWithValue("@Param1", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[0].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param2", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param3", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param4", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param5", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param6", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param7", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param8", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param9", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param10", SqlDbType.VarChar).Value = "";
+
+                        break;
+
+                    case 2:
+
+                        cmd.Parameters.AddWithValue("@Param1", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[0].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param2", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[1].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param3", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param4", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param5", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param6", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param7", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param8", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param9", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param10", SqlDbType.VarChar).Value = "";
+
+                        break;
+
+                    case 3:
+
+                        cmd.Parameters.AddWithValue("@Param1", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[0].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param2", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[1].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param3", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[2].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param4", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param5", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param6", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param7", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param8", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param9", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param10", SqlDbType.VarChar).Value = "";
+
+                        break;
+
+                    case 4:
+
+                        cmd.Parameters.AddWithValue("@Param1", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[0].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param2", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[1].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param3", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[2].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param4", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[3].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param5", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param6", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param7", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param8", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param9", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param10", SqlDbType.VarChar).Value = "";
+
+                        break;
+
+                    case 5:
+
+                        cmd.Parameters.AddWithValue("@Param1", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[0].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param2", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[1].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param3", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[2].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param4", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[3].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param5", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[4].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param6", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param7", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param8", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param9", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param10", SqlDbType.VarChar).Value = "";
+
+                        break;
+
+                    case 6:
+
+                        cmd.Parameters.AddWithValue("@Param1", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[0].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param2", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[1].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param3", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[2].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param4", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[3].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param5", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[4].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param6", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[5].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param7", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param8", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param9", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param10", SqlDbType.VarChar).Value = "";
+
+                        break;
+
+                    case 7:
+
+                        cmd.Parameters.AddWithValue("@Param1", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[0].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param2", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[1].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param3", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[2].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param4", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[3].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param5", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[4].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param6", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[5].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param7", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[6].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param8", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param9", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param10", SqlDbType.VarChar).Value = "";
+
+                        break;
+
+                    case 8:
+
+                        cmd.Parameters.AddWithValue("@Param1", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[0].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param2", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[1].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param3", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[2].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param4", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[3].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param5", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[4].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param6", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[5].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param7", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[6].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param8", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[7].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param9", SqlDbType.VarChar).Value = "";
+
+                        cmd.Parameters.AddWithValue("@Param10", SqlDbType.VarChar).Value = "";
+
+                        break;
+
+                    case 9:
+
+                        cmd.Parameters.AddWithValue("@Param1", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[0].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param2", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[1].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param3", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[2].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param4", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[3].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param5", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[4].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param6", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[5].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param7", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[6].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param8", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[7].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param9", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[8].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param10", SqlDbType.VarChar).Value = "";
+
+                        break;
+
+                    case 10:
+
+                        cmd.Parameters.AddWithValue("@Param1", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[0].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param2", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[1].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param3", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[2].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param4", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[3].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param5", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[4].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param6", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[5].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param7", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[6].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param8", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[7].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param9", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[8].ToString();
+
+                        cmd.Parameters.AddWithValue("@Param10", SqlDbType.VarChar).Value = checkedListBox1.CheckedItems[9].ToString();
+
+                        break;
+
+                }
+
+                cmd.ExecuteNonQuery();
+
+                DataTable dt = new DataTable();
+
+                dt.Load(cmd.ExecuteReader());
+
+                chart1.DataSource = dt;
+
+                dataGridView1.DataSource = dt;
+
+            //}
+
+            //else if (rbSveKategorije.Checked == true)
+
+            //{
+
+            //    SqlCommand cmd = new SqlCommand("PuniGridChartSveKat", Kon);
+
+            //    cmd.CommandType = CommandType.StoredProcedure;
+
+            //    cmd.ExecuteNonQuery();
+
+            //    DataTable dt = new DataTable();
+
+            //    dt.Load(cmd.ExecuteReader());
+
+            //    chart1.DataSource = dt;
+
+            //    dataGridView1.DataSource = dt;
+
+            //}
+
+            chart1.Series["Series1"].XValueMember = "Kategorija";
+
+            chart1.Series["Series1"].YValueMembers = "Vrednost";
+
+            chart1.Titles.Add("PRIMER CHART");
+
+            Kon.Close();
+
+        }
+
+        private void Form2_Load(object sender, EventArgs e)
+
+        {
+
+            rbOdabraneKategorije.Checked = true;
+
+            PuniCheckListBox();
+
+        }
+
+        private void btnPrikazi_Click(object sender, EventArgs e)
+
+        {
+
+            if (rbOdabraneKategorije.Checked == true)
+
+            {
+
+                if (checkedListBox1.CheckedItems.Count < 1)
+
+                {
+
+                    MessageBox.Show("GRESKA! MOARATE IZABRATI NAJMANJE JEDNU KATEGORIJU IZ CHECKLISTBOX-a!");
+
+                }
+
+                else
+
+                {
+
+                    if (checkedListBox1.CheckedItems.Count != 0)
+
+                    {
+
+                        chart1.Titles.Clear();
+
+                        PuniGridChart();
+
+                    }
+
+                }
+
+            }
+
+            if (rbSveKategorije.Checked == true)
+
+            {
+
+                chart1.Titles.Clear();
+
+                PuniGridChart();
+
+            }
+
+        }
+
+        private void rbSveKategorije_CheckedChanged(object sender, EventArgs e)
+
+        {
+
+            if (rbSveKategorije.Checked == true)
+
+            {
+
+                for (int i = 0; i < checkedListBox1.Items.Count; i++)
+
+                {
+
+                    checkedListBox1.SetItemChecked(i, true);
+
+                }
+
+                checkedListBox1.Enabled = false;
+
+            }
+
+            else
+
+            {
+
+                for (int i = 0; i < checkedListBox1.Items.Count; i++)
+
+                {
+
+                    checkedListBox1.SetItemChecked(i, false);
+
+                }
+
+                checkedListBox1.Enabled = true;
+
+            }
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+
+        {
+
+            this.Close();
+
+        }
+
+    }
+
+}
