@@ -1,0 +1,1259 @@
+using System;
+
+using System.Collections.Generic;
+
+using System.ComponentModel;
+
+using System.Data;
+
+using System.Drawing;
+
+using System.Linq;
+
+using System.Text;
+
+using System.Threading.Tasks;
+
+using System.Windows.Forms;
+
+using System.Data.SqlClient;
+
+namespace DemoMatura
+
+{
+
+    public partial class Form1 : Form
+
+    {
+
+        public Form1()
+
+        {
+
+            InitializeComponent();
+
+        }
+
+        //SqlConnection Kon = new SqlConnection(@"Data Source=DESKTOP-R7KLAQU\SQLEXPRESS;Initial Catalog=DemoMatura;Integrated Security=True"); /* MM 2 sp*/
+
+        SqlConnection Kon = new SqlConnection("Data Source=DESKTOP-IN77TSH;Initial Catalog=DemoMatura;Integrated Security=True");
+
+        SqlCommand kom = new SqlCommand();
+
+        SqlDataReader dr;
+
+        int id = 0;
+
+        String SortKolona;
+
+        private void UnesiProizvod()
+
+        {
+
+            Kon.Open();
+
+            SqlCommand cmd = new SqlCommand("UnesiProizvod", Kon);
+
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddWithValue("@NazivProizvoda", SqlDbType.VarChar).Value = txtNazivP.Text.ToString();
+
+            cmd.Parameters.AddWithValue("@JedinicaMere", SqlDbType.VarChar).Value = cmbJM.Text.ToString();
+
+            cmd.Parameters.AddWithValue("@Kategorija", SqlDbType.VarChar).Value = cmbKategorija.Text.ToString();
+
+            cmd.Parameters.AddWithValue("@Cena", SqlDbType.VarChar).Value = txtCena.Text.ToString();
+
+            cmd.Parameters.AddWithValue("@Kolicina", SqlDbType.VarChar).Value = txtKolicina.Text.ToString();
+
+            cmd.Parameters.AddWithValue("@DatumPrijema", SqlDbType.Date).Value = dtpDatumPrijema.Value;
+
+            cmd.Parameters.AddWithValue("@RokTrajanja", SqlDbType.Date).Value = Convert.ToDateTime(maskedRokTrajanja.Text);
+
+            cmd.Parameters.AddWithValue("@ImaRokTrajanja", SqlDbType.VarChar).Value = chkRokTrajanja.Checked.ToString();
+
+            cmd.ExecuteNonQuery();
+
+            Kon.Close();
+
+        }
+
+        private void UnesiProizvodLB()
+
+        {
+
+            Kon.Open();
+
+            SqlCommand cmd = new SqlCommand("UnesiProizvod", Kon);
+
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddWithValue("@NazivProizvoda", SqlDbType.VarChar).Value = txtNazivProizvodaLB.Text.ToString();
+
+            cmd.Parameters.AddWithValue("@JedinicaMere", SqlDbType.VarChar).Value = cmbJMLB.Text.ToString();
+
+            cmd.Parameters.AddWithValue("@Kategorija", SqlDbType.VarChar).Value = cmbKategorijaLB.Text.ToString();
+
+            cmd.Parameters.AddWithValue("@Cena", SqlDbType.VarChar).Value = txtCenaLB.Text.ToString();
+
+            cmd.Parameters.AddWithValue("@Kolicina", SqlDbType.VarChar).Value = txtKolicinaLB.Text.ToString();
+
+            cmd.Parameters.AddWithValue("@DatumPrijema", SqlDbType.Date).Value = dtpDatumPrijemaLB.Value;
+
+            cmd.Parameters.AddWithValue("@RokTrajanja", SqlDbType.Date).Value = Convert.ToDateTime(maskedRokTrajanjaLB.Text);
+
+            cmd.Parameters.AddWithValue("@ImaRokTrajanja", SqlDbType.VarChar).Value = chkRokTrajanjaLB.Checked.ToString();
+
+            cmd.ExecuteNonQuery();
+
+            Kon.Close();
+
+        }
+
+        private void ProveraRokaTrajanja()
+
+        {
+
+            foreach (ListViewItem item in listView1.Items)
+
+            {
+
+                if (Convert.ToDateTime(item.SubItems[9].Text) < DateTime.Now.AddDays(-1))
+
+                {
+
+                    item.BackColor = Color.Red;
+
+                }
+
+                if (Convert.ToDateTime(item.SubItems[9].Text) > DateTime.Now.AddDays(-1) && Convert.ToDateTime(item.SubItems[9].Text) < DateTime.Now.AddDays(10))
+
+                {
+
+                    item.BackColor = Color.Green;
+
+                    item.ForeColor = Color.Yellow;
+
+                }
+
+            }
+
+        }
+
+        private void PuniListView()
+
+        {
+
+            listView1.Items.Clear();
+
+            Kon.Open();
+
+            SqlCommand cmd = new SqlCommand("PuniListView", Kon);
+
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddWithValue("@Sortiranje", SqlDbType.VarChar).Value = SortKolona;
+
+            //cmd.ExecuteNonQuery();
+
+            //DataTable dt = new DataTable();
+
+            //dt.Load(cmd.ExecuteReader());
+
+            //kom.Connection = Kon;
+
+            //kom.CommandText = "EXEC PuniListView";
+
+            //Kon.Open();
+
+            //dr = kom.ExecuteReader();
+
+            dr = cmd.ExecuteReader();
+
+            while (dr.Read())
+
+            {
+
+                ListViewItem red = new ListViewItem(dr[0].ToString());
+
+                for (int i = 1; i < 10; i++) /* i IDE DO KOLIKO POLJA VRACA PROCEDURA*/
+
+                    red.SubItems.Add(dr[i].ToString());
+
+                listView1.Items.Add(red);
+
+            }
+
+            Kon.Close();
+
+        }
+
+        private void BrisiProizvod()
+
+        {
+
+            string poruka = "Zelite da obrisete stavku?";
+
+            string naslov = "Brisanje proizvoda";
+
+            MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+
+            DialogResult result = MessageBox.Show(poruka, naslov, buttons);
+
+            if (result == DialogResult.Yes)
+
+            {
+
+                Kon.Open();
+
+                SqlCommand cmd = new SqlCommand("BrisiProizvod", Kon);
+
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@SifraProizvoda", SqlDbType.VarChar).Value = txtSifraP.Text.ToString();
+
+                cmd.ExecuteNonQuery();
+
+                Kon.Close();
+
+            }
+
+        }
+
+        private void BrisiProizvodLB()
+
+        {
+
+            string poruka = "Zelite da obrisete stavku?";
+
+            string naslov = "Brisanje proizvoda";
+
+            MessageBoxButtons buttons = MessageBoxButtons.YesNo;
+
+            DialogResult result = MessageBox.Show(poruka, naslov, buttons);
+
+            if (result == DialogResult.Yes)
+
+            {
+
+                Kon.Open();
+
+                SqlCommand cmd = new SqlCommand("BrisiProizvod", Kon);
+
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@SifraProizvoda", SqlDbType.VarChar).Value = txtSifraProizvodaLB.Text.ToString();
+
+                cmd.ExecuteNonQuery();
+
+                Kon.Close();
+
+            }
+
+        }
+
+        private void IzmeniProizvod()
+
+        {
+
+            Kon.Open();
+
+            SqlCommand cmd = new SqlCommand("IzmeniProizvod", Kon);
+
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddWithValue("@SifraProizvoda", SqlDbType.VarChar).Value = txtSifraP.Text.ToString();
+
+            cmd.Parameters.AddWithValue("@NazivProizvoda", SqlDbType.VarChar).Value = txtNazivP.Text.ToString();
+
+            cmd.Parameters.AddWithValue("@JedinicaMere", SqlDbType.VarChar).Value = cmbJM.Text.ToString();
+
+            cmd.Parameters.AddWithValue("@Kategorija", SqlDbType.VarChar).Value = cmbKategorija.Text.ToString();
+
+            cmd.Parameters.AddWithValue("@Cena", SqlDbType.VarChar).Value = txtCena.Text.ToString();
+
+            cmd.Parameters.AddWithValue("@Kolicina", SqlDbType.VarChar).Value = txtKolicina.Text.ToString();
+
+            cmd.Parameters.AddWithValue("@DatumPrijema", SqlDbType.Date).Value = dtpDatumPrijema.Value;
+
+            cmd.Parameters.AddWithValue("@RokTrajanja", SqlDbType.Date).Value = Convert.ToDateTime(maskedRokTrajanja.Text);
+
+            cmd.Parameters.AddWithValue("@ImaRokTrajanja", SqlDbType.VarChar).Value = chkRokTrajanja.Checked.ToString();
+
+            cmd.ExecuteNonQuery();
+
+            Kon.Close();
+
+        }
+
+        private void IzmeniProizvodLB()
+
+        {
+
+            Kon.Open();
+
+            SqlCommand cmd = new SqlCommand("IzmeniProizvod", Kon);
+
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddWithValue("@SifraProizvoda", SqlDbType.VarChar).Value = txtSifraProizvodaLB.Text.ToString();
+
+            cmd.Parameters.AddWithValue("@NazivProizvoda", SqlDbType.VarChar).Value = txtNazivProizvodaLB.Text.ToString();
+
+            cmd.Parameters.AddWithValue("@JedinicaMere", SqlDbType.VarChar).Value = cmbJMLB.Text.ToString();
+
+            cmd.Parameters.AddWithValue("@Kategorija", SqlDbType.VarChar).Value = cmbKategorijaLB.Text.ToString();
+
+            cmd.Parameters.AddWithValue("@Cena", SqlDbType.VarChar).Value = txtCenaLB.Text.ToString();
+
+            cmd.Parameters.AddWithValue("@Kolicina", SqlDbType.VarChar).Value = txtKolicinaLB.Text.ToString();
+
+            cmd.Parameters.AddWithValue("@DatumPrijema", SqlDbType.Date).Value = dtpDatumPrijemaLB.Value;
+
+            cmd.Parameters.AddWithValue("@RokTrajanja", SqlDbType.VarChar).Value = Convert.ToDateTime(maskedRokTrajanjaLB.Text);
+
+            cmd.Parameters.AddWithValue("@ImaRokTrajanja", SqlDbType.VarChar).Value = chkRokTrajanjaLB.Checked.ToString();
+
+            cmd.ExecuteNonQuery();
+
+            Kon.Close();
+
+        }
+
+        private void SaListViewNaKontrole()
+
+        {
+
+            foreach (ListViewItem item in listView1.SelectedItems)
+
+            {
+
+                id = Convert.ToInt32(item.SubItems[0].Text);
+
+                txtSifraP.Text = id.ToString();
+
+                txtNazivP.Text = item.SubItems[1].Text;
+
+                cmbJM.Text = item.SubItems[2].Text;
+
+                cmbKategorija.Text = item.SubItems[3].Text;
+
+                txtCena.Text = item.SubItems[4].Text;
+
+                txtKolicina.Text = item.SubItems[5].Text;
+
+                txtVrednost.Text = item.SubItems[6].Text;
+
+                dtpDatumPrijema.Value = Convert.ToDateTime(item.SubItems[7].Text);
+
+                switch (item.SubItems[8].Text)
+
+                {
+
+                    case "DA":
+
+                        chkRokTrajanja.Checked = true;
+
+                        break;
+
+                    case "NE":
+
+                        chkRokTrajanja.Checked = false;
+
+                        break;
+
+                }
+
+                if (item.SubItems[8].Text == "DA")
+
+                {
+
+                    maskedRokTrajanja.Text = item.SubItems[9].Text;
+
+                }
+
+                else
+
+                {
+
+                    maskedRokTrajanja.Text = "9999.01.01";
+
+                }
+
+            }
+
+        }
+
+        private void PuniComboKategorija()
+
+        {
+
+            Kon.Open();
+
+            SqlCommand cmd = new SqlCommand("SELECT * FROM Kategorija ORDER BY Kategorija", Kon);
+
+            cmd.CommandType = CommandType.Text;
+
+            cmd.ExecuteNonQuery();
+
+            DataTable dt = new DataTable();
+
+            dt.Load(cmd.ExecuteReader());
+
+            cmbKategorija.DataSource = dt;
+
+            cmbKategorija.DisplayMember = "Kategorija";
+
+            cmbKategorijaLB.DataSource = dt;
+
+            cmbKategorijaLB.DisplayMember = "Kategorija";
+
+            Kon.Close();
+
+        }
+
+        private void PuniListBox()
+
+        {
+
+            Kon.Open();
+
+            SqlCommand cmd = new SqlCommand("PuniListBox", Kon);
+
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.ExecuteNonQuery();
+
+            DataTable dt = new DataTable();
+
+            dt.Load(cmd.ExecuteReader());
+
+            listBox1.DataSource = dt;
+
+            listBox1.DisplayMember = "Nesto";
+
+            Kon.Close();
+
+        }
+
+        private void BrisanjeKontrola()
+
+        {
+
+            txtSifraP.Clear();
+
+            txtNazivP.Clear();
+
+            cmbJM.Text = "";
+
+            cmbKategorija.Text = "";
+
+            txtCena.Clear();
+
+            txtKolicina.Clear();
+
+            txtVrednost.Clear();
+
+            dtpDatumPrijema.Value = DateTime.Now;
+
+            //maskedRokTrajanja.Text = DateTime.Now.ToString("yyyy.MM.dd");
+
+            chkRokTrajanja.Checked = false;
+
+            if (chkRokTrajanja.Checked == true)
+
+            {
+
+                maskedRokTrajanja.Text = DateTime.Now.ToString("yyyy.MM.dd");
+
+            }
+
+            else
+
+            {
+
+                maskedRokTrajanja.Text = "9999.01.01";
+
+            }
+
+        }
+
+        private void BrisanjeKontrolaLB()
+
+        {
+
+            txtSifraProizvodaLB.Clear();
+
+            txtNazivProizvodaLB.Clear();
+
+            cmbJMLB.Text = "";
+
+            cmbKategorijaLB.Text = "";
+
+            txtCenaLB.Clear();
+
+            txtKolicinaLB.Clear();
+
+            txtVrednostLB.Clear();
+
+            dtpDatumPrijemaLB.Value = DateTime.Now;
+
+            maskedRokTrajanjaLB.Text = DateTime.Now.ToString("yyyy.MM.dd");
+
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+
+        {
+
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+
+        {
+
+            this.Close();
+
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+
+        {
+
+            rbSortSifra.Checked = true;
+
+            txtSifraP.Enabled = false;
+
+            txtVrednost.Enabled = false;
+
+            txtSifraProizvodaLB.Enabled = false;
+
+            txtVrednostLB.Enabled = false;
+
+            txtVrednost.BackColor = Color.Yellow;
+
+            txtVrednost.ForeColor = Color.Black;
+
+            PuniListView();
+
+            ProveraRokaTrajanja();
+
+            PuniComboKategorija();
+
+            PuniListBox();
+
+            dtpDatumPrijema.Value = DateTime.Now;
+
+            maskedRokTrajanja.Enabled = false;
+
+            if (chkRokTrajanja.Checked == true)
+
+            {
+
+                maskedRokTrajanja.Text = DateTime.Now.ToString("yyyy.MM.dd");
+
+            }
+
+            else
+
+            {
+
+                maskedRokTrajanja.Text = "9999.01.01";
+
+            }
+
+            dtpDatumPrijemaLB.Value = DateTime.Now;
+
+            maskedRokTrajanjaLB.Text = DateTime.Now.ToString("yyyy.MM.dd");
+
+        }
+
+        private void btnUnos_Click(object sender, EventArgs e)
+
+        {
+
+            if (txtSifraP.Text != "")
+
+            {
+
+                MessageBox.Show("GRESKA! PROIZVOD POD OVOM SIFROM VEC POSTOJI!!!");
+
+                BrisanjeKontrola();
+
+            } else if ((txtNazivP.Text != "" || txtNazivProizvodaLB.Text != "") && dtpDatumPrijema.Value < DateTime.Now)
+
+                {
+
+                UnesiProizvod();
+
+                PuniListView();
+
+                ProveraRokaTrajanja();
+
+                PuniListBox();
+
+                BrisanjeKontrola();
+
+                }
+
+                else
+
+                {
+
+                    MessageBox.Show("GRESKA! NISTE UNELI NAZIV PROIZVODA ILI JE DATUM PRIJEMA ROBE VECI OD DANASNJEG DATUMA!!");
+
+                }   
+
+        }
+
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+
+        {
+
+            SaListViewNaKontrole();
+
+        }
+
+        private void btnBrisanje_Click(object sender, EventArgs e)
+
+        {
+
+            if (txtSifraP.Text != "")
+
+            {
+
+                BrisiProizvod();
+
+                PuniListView();
+
+                ProveraRokaTrajanja();
+
+                PuniListBox();
+
+                BrisanjeKontrola();
+
+            }
+
+            else
+
+            {
+
+                MessageBox.Show("GRESKA! NIJE ODABRANA STAVKA ZA BRISANJE!!!");
+
+                BrisanjeKontrola();
+
+            }
+
+        }
+
+        private void btnIzmena_Click(object sender, EventArgs e)
+
+        {
+
+            IzmeniProizvod();
+
+            
+
+            PuniListView();
+
+            ProveraRokaTrajanja();
+
+            
+
+            PuniListBox();
+
+            BrisanjeKontrola();
+
+        }
+
+        private void aNALIZASTANJAToolStripMenuItem_Click(object sender, EventArgs e)
+
+        {
+
+            Form2 form2 = new Form2();
+
+            form2.ShowDialog();
+
+        }
+
+        private void tabPage1_Click(object sender, EventArgs e)
+
+        {
+
+         
+
+        }
+
+        private void btnPrazniKontrole_Click(object sender, EventArgs e)
+
+        {
+
+            BrisanjeKontrola();
+
+        }
+
+        private void btnIzlazLB_Click(object sender, EventArgs e)
+
+        {
+
+            this.Close();
+
+        }
+
+        private void btnPrazniKontroleLB_Click(object sender, EventArgs e)
+
+        {
+
+            BrisanjeKontrolaLB();
+
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+
+        {
+
+           //string Par_Proizvod = listBox1.Text.ToString();
+
+           // string[] PProizvod = Par_Proizvod.Split('-');
+
+            
+
+            //txtSifraProizvodaLB.Text = listBox1.Text.Count().ToString();
+
+            //txtNazivProizvodaLB.Text = PProizvod[1].ToString().Trim();
+
+            //textBox1.Text = PProizvod[1].ToString().Trim();
+
+            //textBox2.Text = PProizvod[1].ToString().Trim();
+
+            //cmbJMLB.Text = PProizvod[1].ToString().Trim();
+
+            //cmbKategorijaLB.Text = PProizvod[1].ToString().Trim();
+
+            //txtCenaLB.Text = PProizvod[1].ToString().Trim();
+
+            //txtKolicinaLB.Text = PProizvod[1].ToString().Trim();
+
+            //txtVrednostLB.Text = PProizvod[1].ToString().Trim();
+
+            //dtpDatumPrijemaLB.Value = Convert.ToDateTime(PProizvod[7].ToString().Trim());
+
+            //switch (PProizvod[8].ToString().Trim())
+
+            //{
+
+            //    case "DA":
+
+            //        chkRokTrajanjaLB.Checked = true;
+
+            //        break;
+
+            //    case "NE":
+
+            //        chkRokTrajanjaLB.Checked = false;
+
+            //        break;
+
+            //}
+
+            //maskedRokTrajanjaLB.Text = PProizvod[9].ToString().Trim();
+
+        }
+
+        private void listBox1_Click(object sender, EventArgs e)
+
+        {
+
+            string Par_Proizvod = listBox1.Text.ToString();
+
+            string[] PProizvod = Par_Proizvod.Split('-');
+
+            txtSifraProizvodaLB.Text = PProizvod[0].ToString().Trim();
+
+            txtNazivProizvodaLB.Text = PProizvod[1].ToString().Trim();
+
+            cmbJMLB.Text = PProizvod[2].ToString().Trim();
+
+            cmbKategorijaLB.Text = PProizvod[3].ToString().Trim();
+
+            txtCenaLB.Text = PProizvod[4].ToString().Trim();
+
+            txtKolicinaLB.Text = PProizvod[5].ToString().Trim();
+
+            txtVrednostLB.Text = PProizvod[6].ToString().Trim();
+
+            dtpDatumPrijemaLB.Value = Convert.ToDateTime(PProizvod[7].ToString().Trim());
+
+            switch (PProizvod[8].ToString().Trim())
+
+            {
+
+                case "DA":
+
+                    chkRokTrajanjaLB.Checked = true;
+
+                    break;
+
+                case "NE":
+
+                    chkRokTrajanjaLB.Checked = false;
+
+                    break;
+
+            }
+
+            maskedRokTrajanjaLB.Text = PProizvod[9].ToString().Trim();
+
+            //comboProizvodjac.Text = PModel[2].ToString().Trim();
+
+            //textNazivModel.Text = PModel[2].ToString().Trim() + "  " + PModel[1].ToString().Trim();
+
+        }
+
+        private void btnUnosLB_Click(object sender, EventArgs e)
+
+        {
+
+            UnesiProizvodLB();
+
+            PuniListBox();
+
+            PuniListView();
+
+        }
+
+        private void btnIzmenaLB_Click(object sender, EventArgs e)
+
+        {
+
+            IzmeniProizvodLB();
+
+            PuniListBox();
+
+            PuniListView();
+
+            
+
+            BrisanjeKontrolaLB();
+
+        }
+
+        private void btnBrisanjeLB_Click(object sender, EventArgs e)
+
+        {
+
+            BrisiProizvodLB();
+
+            PuniListBox();
+
+            PuniListView();
+
+            BrisanjeKontrolaLB();
+
+        }
+
+        private void tabPage2_Click(object sender, EventArgs e)
+
+        {
+
+            
+
+        }
+
+        private void txtVrednost_TextChanged(object sender, EventArgs e)
+
+        {
+
+        }
+
+        private void txtKolicina_Leave(object sender, EventArgs e)
+
+        {
+
+            
+
+            txtVrednost.Text = Convert.ToString(Convert.ToDouble(txtCena.Text) * Convert.ToDouble(txtKolicina.Text));
+
+            txtVrednost.Text = string.Format("{0:#,##0.00}", double.Parse(txtVrednost.Text));
+
+        }
+
+        private void chkRokTrajanja_CheckedChanged(object sender, EventArgs e)
+
+        {
+
+            if (chkRokTrajanja.Checked == true)
+
+            {
+
+                maskedRokTrajanja.Enabled = true;
+
+                maskedRokTrajanja.Text = DateTime.Now.ToString("yyyy.MM.dd");
+
+            }
+
+            else
+
+            {
+
+                maskedRokTrajanja.Enabled = false;
+
+                maskedRokTrajanja.Text = "9999.01.01";
+
+            }
+
+        }
+
+        private void listBox1_SelectedValueChanged(object sender, EventArgs e)
+
+        {
+
+            
+
+        }
+
+        private void listBox1_TabIndexChanged(object sender, EventArgs e)
+
+        {
+
+            
+
+        }
+
+        private void txtByPass_TextChanged(object sender, EventArgs e)
+
+        {
+
+            //string Par_Proizvod = txtByPass.Text.ToString();
+
+            //string[] PProizvod = Par_Proizvod.Split('-');
+
+            //txtSifraProizvodaLB.Text = PProizvod[0].ToString().Trim();
+
+            //txtNazivProizvodaLB.Text = PProizvod[1].ToString().Trim();
+
+            //cmbJMLB.Text = PProizvod[2].ToString().Trim();
+
+            //cmbKategorijaLB.Text = PProizvod[3].ToString().Trim();
+
+            //txtCenaLB.Text = PProizvod[4].ToString().Trim();
+
+            //txtKolicinaLB.Text = PProizvod[5].ToString().Trim();
+
+            //txtVrednostLB.Text = PProizvod[6].ToString().Trim();
+
+            //dtpDatumPrijemaLB.Value = Convert.ToDateTime(PProizvod[7].ToString().Trim());
+
+            //switch (PProizvod[8].ToString().Trim())
+
+            //{
+
+            //    case "DA":
+
+            //        chkRokTrajanjaLB.Checked = true;
+
+            //        break;
+
+            //    case "NE":
+
+            //        chkRokTrajanjaLB.Checked = false;
+
+            //        break;
+
+            //}
+
+            //maskedRokTrajanjaLB.Text = PProizvod[9].ToString().Trim();
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+
+        {
+
+            //string Par_Proizvod = txtByPass.Text.ToString();
+
+            //string[] PProizvod = Par_Proizvod.Split('-');
+
+            //txtSifraProizvodaLB.Text = PProizvod[0].ToString().Trim();
+
+            //txtNazivProizvodaLB.Text = PProizvod[1].ToString().Trim();
+
+            //cmbJMLB.Text = PProizvod[2].ToString().Trim();
+
+            //cmbKategorijaLB.Text = PProizvod[3].ToString().Trim();
+
+            //txtCenaLB.Text = PProizvod[4].ToString().Trim();
+
+            //txtKolicinaLB.Text = PProizvod[5].ToString().Trim();
+
+            //txtVrednostLB.Text = PProizvod[6].ToString().Trim();
+
+            //dtpDatumPrijemaLB.Value = Convert.ToDateTime(PProizvod[7].ToString().Trim());
+
+            //switch (PProizvod[8].ToString().Trim())
+
+            //{
+
+            //    case "DA":
+
+            //        chkRokTrajanjaLB.Checked = true;
+
+            //        break;
+
+            //    case "NE":
+
+            //        chkRokTrajanjaLB.Checked = false;
+
+            //        break;
+
+            //}
+
+            //maskedRokTrajanjaLB.Text = PProizvod[9].ToString().Trim();
+
+        }
+
+        private void txtByPass_Validated(object sender, EventArgs e)
+
+        {
+
+            
+
+        }
+
+        private void listBox1_Leave(object sender, EventArgs e)
+
+        {
+
+        }
+
+        private void aNALIZAPROIZVODIVREDNOSTToolStripMenuItem_Click(object sender, EventArgs e)
+
+        {
+
+            Form3 form3 = new Form3();
+
+            form3.ShowDialog();
+
+        }
+
+        private void rbSortSifra_CheckedChanged(object sender, EventArgs e)
+
+        {
+
+            if (rbSortSifra.Checked == true)
+
+            {
+
+                SortKolona = "Sifra";
+
+                PuniListView();
+
+                ProveraRokaTrajanja();
+
+            }
+
+        }
+
+        private void rbSortNaziv_CheckedChanged(object sender, EventArgs e)
+
+        {
+
+            if (rbSortNaziv.Checked == true)
+
+            {
+
+                SortKolona = "Naziv";
+
+                PuniListView();
+
+                ProveraRokaTrajanja();
+
+            }
+
+        }
+
+        private void rbSortJM_CheckedChanged(object sender, EventArgs e)
+
+        {
+
+            if (rbSortJM.Checked == true)
+
+            {
+
+                SortKolona = "JM";
+
+                PuniListView();
+
+                ProveraRokaTrajanja();
+
+            }
+
+        }
+
+        private void rbSortKategorija_CheckedChanged(object sender, EventArgs e)
+
+        {
+
+            if (rbSortKategorija.Checked == true)
+
+            {
+
+                SortKolona = "Kategorija";
+
+                PuniListView();
+
+                ProveraRokaTrajanja();
+
+            }
+
+        }
+
+        private void rbSortCena_CheckedChanged(object sender, EventArgs e)
+
+        {
+
+            if (rbSortCena.Checked == true)
+
+            {
+
+                SortKolona = "Cena";
+
+                PuniListView();
+
+                ProveraRokaTrajanja();
+
+            }
+
+        }
+
+        private void rbSortKolicina_CheckedChanged(object sender, EventArgs e)
+
+        {
+
+            if (rbSortKolicina.Checked == true)
+
+            {
+
+                SortKolona = "Kolicina";
+
+                PuniListView();
+
+                ProveraRokaTrajanja();
+
+            }
+
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+
+        {
+
+            if (rbSortVrednost.Checked == true)
+
+            {
+
+                SortKolona = "Vrednost";
+
+                PuniListView();
+
+                ProveraRokaTrajanja();
+
+            }
+
+        }
+
+        private void rbSortDatumPrijema_CheckedChanged(object sender, EventArgs e)
+
+        {
+
+            if (rbSortDatumPrijema.Checked == true)
+
+            {
+
+                SortKolona = "DatumPrijema";
+
+                PuniListView();
+
+                ProveraRokaTrajanja();
+
+            }
+
+        }
+
+        private void rbSortImaRok_CheckedChanged(object sender, EventArgs e)
+
+        {
+
+            if (rbSortImaRok.Checked == true)
+
+            {
+
+                SortKolona = "ImaRokTrajanja";
+
+                PuniListView();
+
+                ProveraRokaTrajanja();
+
+            }
+
+        }
+
+        private void rbSortRokTrajanja_CheckedChanged(object sender, EventArgs e)
+
+        {
+
+            if (rbSortRokTrajanja.Checked == true)
+
+            {
+
+                SortKolona = "RokTrajanja";
+
+                PuniListView();
+
+                ProveraRokaTrajanja();
+
+            }
+
+        }
+
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+
+        {
+
+            if (tabControl1.SelectedTab == tabPage1)
+
+            {
+
+                groupBoxSortiranje.Visible = true;
+
+            }
+
+            else if (tabControl1.SelectedTab == tabPage2)
+
+            {
+
+                groupBoxSortiranje.Visible = false;
+
+            }
+
+           
+
+        }
+
+        private void groupBoxSortiranje_EnabledChanged(object sender, EventArgs e)
+
+        {
+
+            
+
+        }
+
+        private void tabControl1_TabIndexChanged(object sender, EventArgs e)
+
+        {
+
+        }
+
+    }
+
+}
