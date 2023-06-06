@@ -1,0 +1,135 @@
+using System;
+
+using System.Collections.Generic;
+
+using System.ComponentModel;
+
+using System.Data;
+
+using System.Drawing;
+
+using System.Linq;
+
+using System.Text;
+
+using System.Threading.Tasks;
+
+using System.Windows.Forms;
+
+using System.Data.SqlClient;
+
+namespace DemoMatura
+
+{
+
+    public partial class Form4 : Form
+
+    {
+
+        public Form4()
+
+        {
+
+            InitializeComponent();
+
+        }
+
+        SqlConnection Kon = new SqlConnection(@"Data Source=DESKTOP-J861PM6\SQLEXPRESS;Initial Catalog=DemoMatura;Integrated Security=True"); /* MM 2 sp*/
+
+        SqlCommand kom = new SqlCommand();
+
+        SqlDataReader dr;
+
+        private void Form4_Load(object sender, EventArgs e)
+
+        {
+
+            PuniGrid();
+
+        }
+
+        private void PuniGrid()
+
+        {
+
+            Kon.Open();
+
+            SqlCommand cmd = new SqlCommand("PuniDataGrid", Kon);
+
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.ExecuteNonQuery();
+
+            DataTable dt = new DataTable();
+
+            dt.Load(cmd.ExecuteReader());
+
+            dataGridView1.DataSource = dt;
+
+            Kon.Close();
+
+        }
+
+        private void dataGridView1_CellClick(object sender, DataGridViewCellEventArgs e)
+
+        {
+
+            txtSifraP.Text = dataGridView1.Rows[e.RowIndex].Cells[0].Value.ToString();
+
+            txtNazivP.Text = dataGridView1.Rows[e.RowIndex].Cells[1].Value.ToString();
+
+            cmbJM.Text = dataGridView1.Rows[e.RowIndex].Cells[2].Value.ToString();
+
+            cmbKategorija.Text = dataGridView1.Rows[e.RowIndex].Cells[3].Value.ToString();
+
+            txtCena.Text = dataGridView1.Rows[e.RowIndex].Cells[4].Value.ToString();
+
+            txtKolicina.Text = dataGridView1.Rows[e.RowIndex].Cells[5].Value.ToString();
+
+            
+
+            txtVrednost.Text = dataGridView1.Rows[e.RowIndex].Cells[6].Value.ToString();
+
+            dtpDatumPrijema.Text = dataGridView1.Rows[e.RowIndex].Cells[7].Value.ToString();
+
+            switch (dataGridView1.Rows[e.RowIndex].Cells[8].Value.ToString())
+
+            {
+
+                case "DA":
+
+                    chkRokTrajanja.Checked = true;
+
+                    break;
+
+                case "NE":
+
+                    chkRokTrajanja.Checked = false;
+
+                    break;
+
+            }
+
+            //            chkRokTrajanja. = dataGridView1.Rows[e.RowIndex].Cells[8].Value.ToString();
+
+            if (dataGridView1.Rows[e.RowIndex].Cells[8].Value.ToString() == "DA")
+
+            {
+
+                maskedRokTrajanja.Text = dataGridView1.Rows[e.RowIndex].Cells[9].Value.ToString();
+
+            }
+
+            else
+
+            {
+
+                maskedRokTrajanja.Text = "9999.01.01";
+
+            }
+
+        }
+
+    }
+
+}
