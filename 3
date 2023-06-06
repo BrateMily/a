@@ -1,0 +1,259 @@
+using System;
+
+using System.Collections.Generic;
+
+using System.ComponentModel;
+
+using System.Data;
+
+using System.Drawing;
+
+using System.Linq;
+
+using System.Text;
+
+using System.Threading.Tasks;
+
+using System.Windows.Forms;
+
+using System.Data.SqlClient;
+
+using System.Windows.Forms.DataVisualization.Charting;
+
+namespace DemoMatura
+
+{
+
+    public partial class Form3 : Form
+
+    {
+
+        public Form3()
+
+        {
+
+            InitializeComponent();
+
+        }
+
+        SqlConnection Kon = new SqlConnection("Data Source=DESKTOP-IN77TSH;Initial Catalog=DemoMatura;Integrated Security=True");
+
+        SqlCommand kom = new SqlCommand();
+
+        SqlDataReader dr;
+
+        int id = 0;
+
+        private void Form3_Load(object sender, EventArgs e)
+
+        {
+
+            PuniComboKategorijaChart();
+
+            numericVrednostDO.Maximum = 100000000;
+
+            numericVrednostDO.Value = 100000000;
+
+            PrikaziBrProizPoKat();
+
+        }
+
+        private void PuniComboKategorijaChart()
+
+        {
+
+            Kon.Open();
+
+            SqlCommand cmd = new SqlCommand("SELECT * FROM Kategorija WHERE Kategorija <> '-' ORDER BY Kategorija", Kon);
+
+            cmd.CommandType = CommandType.Text;
+
+            cmd.ExecuteNonQuery();
+
+            DataTable dt = new DataTable();
+
+            dt.Load(cmd.ExecuteReader());
+
+            comboKategorijaChart.DataSource = dt;
+
+            comboKategorijaChart.DisplayMember = "Kategorija";
+
+            Kon.Close();
+
+        }
+
+        private void PuniGridChart2()
+
+        {
+
+            Kon.Open();
+
+            SqlCommand cmd = new SqlCommand("PuniGridChart2", Kon);
+
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddWithValue("@Kategorija", SqlDbType.VarChar).Value = comboKategorijaChart.Text.ToString();
+
+            cmd.Parameters.AddWithValue("@VrednostOD", SqlDbType.VarChar).Value = numericVrednostOD.Value.ToString();
+
+            cmd.Parameters.AddWithValue("@VrednostDO", SqlDbType.VarChar).Value = numericVrednostDO.Value.ToString();
+
+            cmd.ExecuteNonQuery();
+
+            DataTable dt = new DataTable();
+
+            dt.Load(cmd.ExecuteReader());
+
+            chart1.DataSource = dt;
+
+            dataGridView1.DataSource = dt;
+
+            chart1.Series["Series1"].XValueMember = "NazivProizvoda";
+
+            chart1.Series["Series1"].YValueMembers = "Vrednost";
+
+            chart1.Titles.Add(comboKategorijaChart.Text);
+
+            Kon.Close();
+
+        }
+
+        private void PrikaziBrProizPoKat()
+
+        {
+
+            Kon.Open();
+
+            SqlCommand cmd = new SqlCommand("BrProizPoKat", Kon);
+
+            cmd.CommandType = CommandType.StoredProcedure;
+
+            cmd.Parameters.AddWithValue("@Kategorija", SqlDbType.VarChar).Value = comboKategorijaChart.Text.ToString();
+
+            cmd.ExecuteNonQuery();
+
+            DataTable dt = new DataTable();
+
+            dt.Load(cmd.ExecuteReader());
+
+            foreach (DataRow row in dt.Rows)
+
+            {
+
+                lblBrProizvoda.Text = dt.Rows[0]["BojProizvoda"].ToString();
+
+            }
+
+            Kon.Close();
+
+        }
+
+        private void btnPrikaziChart2_Click(object sender, EventArgs e)
+
+        {
+
+            if (numericVrednostOD.Value > numericVrednostDO.Value)
+
+            {
+
+                MessageBox.Show("GRESKA! VREDNST-OD NE SME BITI VECA OD VREDNOSTI-DO!");
+
+            }
+
+            else
+
+            { 
+
+            chart1.Titles.Clear();
+
+           
+
+            PuniGridChart2();
+
+            PrikaziBrProizPoKat();
+
+            }
+
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+
+        {
+
+            switch (comboBox1.Text)
+
+            {
+
+                case "Bar":
+
+                    chart1.Series["Series1"].ChartType = SeriesChartType.Bar;
+
+                    break;
+
+                case "Column":
+
+                    chart1.Series["Series1"].ChartType = SeriesChartType.Column;
+
+                    break;
+
+                case "Pie":
+
+                    chart1.Series["Series1"].ChartType = SeriesChartType.Pie;
+
+                    break;
+
+                case "Point":
+
+                    chart1.Series["Series1"].ChartType = SeriesChartType.Point;
+
+                    break;
+
+                case "Line":
+
+                    chart1.Series["Series1"].ChartType = SeriesChartType.Line;
+
+                    break;
+
+                case "Stock":
+
+                    chart1.Series["Series1"].ChartType = SeriesChartType.Stock;
+
+                    break;
+
+                default:
+
+                    chart1.Series["Series1"].ChartType = SeriesChartType.Column;
+
+                    break;
+
+            }
+
+        }
+
+        private void btnIzlaz_Click(object sender, EventArgs e)
+
+        {
+
+            this.Close();
+
+        }
+
+        private void comboKategorijaChart_SelectedIndexChanged(object sender, EventArgs e)
+
+        {
+
+            
+
+        }
+
+        private void comboKategorijaChart_Leave(object sender, EventArgs e)
+
+        {
+
+            PrikaziBrProizPoKat();
+
+        }
+
+    }
+
+}
